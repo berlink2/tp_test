@@ -1,8 +1,9 @@
 import axios from "axios";
+import { GET_USERS } from "./dataReducer";
 
 export const getUsers = () => async (dispatch) => {
   try {
-    const res = axios.get(
+    const res = await axios.get(
       "https://iunaptk810.execute-api.ap-southeast-1.amazonaws.com/dev/api/users"
     );
 

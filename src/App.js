@@ -5,7 +5,10 @@ import Header from "./Components/Header/index";
 import Search from "./Components/Search/index";
 import "./app.scss";
 
-const App = () => {
+import { connect } from "react-redux";
+import { getUsers } from "./actions";
+
+const App = (props) => {
   const [users, setUsers] = useState([]);
   const [members, setMembers] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -16,15 +19,16 @@ const App = () => {
   const joinButton = useRef(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await axios.get(
-        "https://iunaptk810.execute-api.ap-southeast-1.amazonaws.com/dev/api/users"
-      );
-      console.log(res.data);
-      setUsers((state) => [...state, ...res.data]);
-    };
-    fetchData();
+    props.getUsers();
   }, []);
+
+  useEffect(() => {
+    console.log(props);
+
+    if (props.data.users.length > 0) {
+      setUsers((state) => [...state, ...props.data.users]);
+    }
+  }, [props]);
 
   useEffect(() => {
     users.forEach((user) => {
@@ -238,4 +242,8 @@ const App = () => {
   );
 };
 
-export default App;
+const mapStateToProps = (state) => ({
+  data: state.data,
+});
+
+export default connect(mapStateToProps, { getUsers })(App);

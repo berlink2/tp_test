@@ -2,9 +2,7 @@ const initialState = {
   users: [],
 };
 
-const initialState = {
-  users: [],
-};
+export const GET_USERS = "GET_USERS";
 
 export default (state = initialState, action) => {
   switch (action.type) {
