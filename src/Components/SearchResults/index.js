@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Card, Container } from "react-bootstrap";
 import "./SearchResults.scss";
+
 const SearchResults = ({ searchResults }) => {
   return (
     <Container>
