@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Container } from "react-bootstrap";
+import React, { useEffect, useState, useRef } from "react";
+import { Row, Col, Card, Container, Button } from "react-bootstrap";
 import axios from "axios";
 import Header from "./Components/Header/index";
 import Search from "./Components/Search/index";
@@ -10,7 +10,8 @@ const App = () => {
   const [members, setMembers] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [isSearch, setIsSearch] = useState(false);
-
+  const [newMembers, setNewMembers] = useState([]);
+  const joinButton = useRef(null);
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get(
@@ -32,8 +33,26 @@ const App = () => {
     });
   }, [users]);
 
+  useEffect(() => {
+    if (newMembers.length > 0) {
+      joinButton.current.removeAttribute("disabled");
+      joinButton.current.removeAttribute("variant");
+      joinButton.current.setAttribute("class", "btn btn-primary");
+    }
+  }, [newMembers]);
+
+  const suggestionClick = (e, userId) => {
+    const userObj = suggestions.find((user) => user._id === userId);
+    console.log(userObj);
+    const newSuggestions = suggestions.filter((user) => {
+      return user._id !== userId;
+    });
+    setSuggestions(() => [...newSuggestions]);
+    setNewMembers((state) => [...state, userObj]);
+  };
+
   return (
-    <Container>
+    <Container className="mb-5">
       <Header />
       <Search />
       {!isSearch ? (
@@ -43,7 +62,10 @@ const App = () => {
 
             {suggestions.map((suggestion) => {
               return (
-                <Row key={suggestion._id}>
+                <Row
+                  key={suggestion._id}
+                  onClick={(e) => suggestionClick(e, suggestion._id)}
+                >
                   <Card style={{ width: "100%" }}>
                     <Card.Body className="card-body">
                       <Row>
@@ -125,6 +147,37 @@ const App = () => {
       ) : (
         "Searching"
       )}
+      {newMembers.length > 0 && (
+        <Container>
+          <Row className="d-flex flex-row justify-content-between">
+            <Col className="mr-auto">Recipient</Col>
+            <Col className="ml-auto">Clear All</Col>
+          </Row>
+          <Row>
+            {newMembers.length > 0 &&
+              newMembers.map((user) => {
+                return (
+                  <Button
+                    size="sm"
+                    className="mr-1"
+                    variant="secondary"
+                    key={user._id}
+                  >
+                    {user.name}
+                    &nbsp; x
+                  </Button>
+                );
+              })}
+          </Row>
+        </Container>
+      )}
+
+      <Container className="text-center mt-3 mb-3 join-button">
+        <Button ref={joinButton} variant="secondary" disabled>
+          Undang Bergabung{" "}
+          {newMembers.length > 0 ? `(${newMembers.length})` : ""}
+        </Button>
+      </Container>
     </Container>
   );
 };
