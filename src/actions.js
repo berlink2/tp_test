@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_USERS } from "./dataReducer";
+import { GET_USERS, GET_MEMBERS, GET_SUGGESTIONS } from "./dataReducer";
 
 export const getUsers = () => async (dispatch) => {
   try {
@@ -15,3 +15,5 @@ export const getUsers = () => async (dispatch) => {
     console.log(e);
   }
 };
+
+export const searchUsers = (query) => async (dispatch) => {};
