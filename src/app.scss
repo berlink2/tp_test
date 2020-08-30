@@ -1,0 +1,10 @@
+.card-body {
+  &__name {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  &__titles {
+    font-size: 0.8rem;
+  }
+}
