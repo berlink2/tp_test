@@ -11,7 +11,10 @@ const App = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [isSearch, setIsSearch] = useState(false);
   const [newMembers, setNewMembers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   const joinButton = useRef(null);
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get(
@@ -41,9 +44,14 @@ const App = () => {
     }
   }, [newMembers]);
 
+  useEffect(() => {
+    if (searchQuery !== "") {
+      searchUsers(searchQuery);
+    }
+  }, [searchQuery]);
+
   const suggestionClick = (e, userId) => {
     const userObj = suggestions.find((user) => user._id === userId);
-    console.log(userObj);
     const newSuggestions = suggestions.filter((user) => {
       return user._id !== userId;
     });
@@ -51,10 +59,18 @@ const App = () => {
     setNewMembers((state) => [...state, userObj]);
   };
 
+  const searchUsers = (query) => {
+    const res = users.filter((user) => {
+      return user.name.toLowerCase().includes(query.toLowerCase());
+    });
+
+    setSearchResults(() => [...res]);
+  };
+
   return (
     <Container className="mb-5">
       <Header />
-      <Search />
+      <Search setIsSearch={setIsSearch} setSearchQuery={setSearchQuery} />
       {!isSearch ? (
         <Container>
           <Container>
@@ -145,7 +161,47 @@ const App = () => {
           </Container>
         </Container>
       ) : (
-        "Searching"
+        <Container>
+          <p>Search</p>
+          {searchResults.map((res) => {
+            return (
+              <Row key={res._id}>
+                <Card style={{ width: "100%" }}>
+                  <Card.Body className="card-body">
+                    <Row>
+                      <Col xs={3}>
+                        <img
+                          className="rounded-circle"
+                          height="45"
+                          src={res.picture}
+                          alt="profile pic"
+                        />
+                      </Col>
+                      <Col xs={9}>
+                        <Row>
+                          <Card.Title className="card-body__name">
+                            {res.name}
+                          </Card.Title>
+                        </Row>
+                        <Row>
+                          <Card.Subtitle className="card-body__titles">
+                            Desainer {res.company} &#8226; &nbsp;
+                            {res.tags.join(" & ")}
+                          </Card.Subtitle>
+                        </Row>
+                        <Row>
+                          <Card.Subtitle className="mt-1">
+                            Rating: Trophies:
+                          </Card.Subtitle>
+                        </Row>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Row>
+            );
+          })}
+        </Container>
       )}
       {newMembers.length > 0 && (
         <Container>
